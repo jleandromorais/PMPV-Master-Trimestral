@@ -1,0 +1,4 @@
+# Projeto simples de console, sem dependências externas.
+# Você pode rodar com:
+#   python main.py
+
