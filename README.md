@@ -2,7 +2,7 @@
 
 Sistema profissional em Python com interface gráfica para cálculo de **PMPV (Preço Médio Ponderado de Venda)** com gestão trimestral e decomposição de preços em três parcelas: **Molécula**, **Transporte** e **Logística**.
 
-Desenvolvido para facilitar o cálculo de contratos de gás natural com múltiplos fornecedores (Petrobras, Galp, Eneva, Brava, Orizon, Petrorecôncavo).
+Desenvolvido para facilitar o cálculo de contratos de gás natural com múltiplos fornecedores.
 
 ---
 
@@ -106,13 +106,13 @@ Conta-Grafica-Automacao/
 
 ## ⚙️ Personalização
 
-### 1. Adicionar Empresas Pré-Cadastradas
+### 1. Adicionar Fornecedores Pré-Cadastrados
 
 Edite a **linha 11** de `main.py`:
 
 ```python
-self.empresas_padrao = ["PETROBRAS", "GALP", "PETRORECONCAVO", 
-                        "BRAVA", "ENEVA", "ORIZON", "SUA_EMPRESA"]
+self.empresas_padrao = ["Fornecedor 1", "Fornecedor 2", "Fornecedor 3", 
+                        "Fornecedor 4", "Fornecedor 5", "Seu Fornecedor"]
 ```
 
 ### 2. Alterar Número de Meses (Trimestre → Semestre)
@@ -181,11 +181,11 @@ sudo apt-get install python3-tk
 
 ### Entrada (Mês 1):
 
-| Empresa      | Molécula | Transporte | Logística | Preço Final | Volume  |
+| Fornecedor   | Molécula | Transporte | Logística | Preço Final | Volume  |
 |--------------|----------|------------|-----------|-------------|---------|
-| PETROBRAS    | 10.50    | 0.50       | 0.30      | 11.30       | 100.000 |
-| GALP         | 11.20    | 0.45       | 0.25      | 11.90       | 80.000  |
-| ENEVA        | 9.80     | 0.00       | 1.65      | 11.45       | 50.000  |
+| Fornecedor 1 | 10.50    | 0.50       | 0.30      | 11.30       | 100.000 |
+| Fornecedor 2 | 11.20    | 0.45       | 0.25      | 11.90       | 80.000  |
+| Fornecedor 3 | 9.80     | 0.00       | 1.65      | 11.45       | 50.000  |
 
 ### Saída (Trimestre):
 
@@ -201,8 +201,8 @@ sudo apt-get install python3-tk
 ## 💡 Dicas de Uso
 
 - **Use vírgula ou ponto:** O sistema aceita ambos (ex: `10,50` ou `10.50`)
-- **Deixe campos vazios:** Se uma empresa não fornece em determinado mês, simplesmente não preencha o volume
-- **Nomes descritivos:** Use nomes como "Petrobras - Contrato XYZ" para facilitar identificação
+- **Deixe campos vazios:** Se um fornecedor não opera em determinado mês, simplesmente não preencha o volume
+- **Nomes descritivos:** Use nomes como "Fornecedor A - Contrato 123" para facilitar identificação
 - **Conferência visual:** O Preço Final em azul ajuda a conferir se os valores estão corretos
 
 ---
@@ -215,7 +215,7 @@ Este projeto foi desenvolvido para uso interno. Sem licença pública definida.
 
 ## 👤 Autor
 
-Desenvolvido para auxiliar no cálculo de contratos de gás natural da Copergás.
+Desenvolvido para auxiliar no cálculo de contratos de gás natural.
 
 ---
 

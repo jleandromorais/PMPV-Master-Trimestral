@@ -8,7 +8,8 @@ class CalculadoraTrimestralPMPV:
         self.root.geometry("1200x750")
         self.root.configure(bg="#ecf0f1")
         
-        self.empresas_padrao = ["PETROBRAS", "GALP", "PETRORECONCAVO", "BRAVA", "ENEVA", "ORIZON"]
+        self.empresas_padrao = ["Fornecedor 1", "Fornecedor 2", "Fornecedor 3", 
+                                "Fornecedor 4", "Fornecedor 5", "Fornecedor 6"]
         
         # Dicionário para armazenar as referências de cada mês
         # Estrutura: self.meses['Mês 1'] = [lista_de_entradas]
