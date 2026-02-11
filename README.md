@@ -25,6 +25,13 @@ Para cada contrato/fornecedor, você informa:
 - **Botão 🗑️**: Remove empresas com confirmação de segurança
 - Sem limite de quantidade de empresas por mês
 
+### ✅ Copiar Linha Entre Meses
+- **Botão 📋** (roxo): Copia uma linha específica para outro mês
+- Disponível em TODAS as linhas de TODOS os meses
+- Útil quando um fornecedor mantém os mesmos valores entre meses
+- Detecta automaticamente se a empresa já existe no destino
+- Confirmação de segurança antes de sobrescrever
+
 ### ✅ Cálculo Automático em Tempo Real
 - Ao digitar as três parcelas, o **Preço Final** atualiza instantaneamente
 - Validação automática de valores
@@ -40,10 +47,12 @@ Para cada contrato/fornecedor, você informa:
 - Cores organizadas por função:
   - **Azul**: Preço Final (calculado automaticamente)
   - **Amarelo**: Volume (campo obrigatório)
+  - **Roxo**: Botão copiar linha
   - **Vermelho**: Botão remover
   - **Verde**: Botão calcular
 - Cabeçalhos escuros e linhas alternadas para melhor leitura
 - Scrollbar automática para muitos contratos
+- Ícones intuitivos para cada ação (📋 📊 🗑️ ➕ ⚡)
 
 ---
 
@@ -75,11 +84,23 @@ python main.py
    - O **Preço Final** aparecerá automaticamente em azul
    - Informe o **Volume (m³/dia)** na coluna amarela
 
-### Passo 2: Adicionar/Remover Empresas
+### Passo 2: Adicionar/Remover/Copiar Empresas
 
 - **Para adicionar:** Clique no botão **➕ Adicionar Nova Empresa** (azul) no final da lista
+- **Para copiar uma linha:** Clique no botão **📋** (roxo) ao lado da empresa desejada
+  - Escolha para qual mês copiar (Mês 1, 2 ou 3)
+  - Se a empresa já existir no destino, você pode sobrescrever
 - **Para remover:** Clique no botão **🗑️** (vermelho) ao lado da empresa desejada
-- Aparecerá uma confirmação antes de remover
+- Aparecerá uma confirmação antes de remover ou sobrescrever
+
+### Exemplo de Fluxo com Cópia:
+
+1. Preencha **Fornecedor 1** no **Mês 1** (valores: 10.50 / 0.50 / 0.30 / 100.000)
+2. Clique no **📋** (roxo) ao lado do Fornecedor 1
+3. Uma janela abre perguntando: "Copiar para qual mês?"
+4. Clique em **➡️ Mês 2**
+5. ✅ Fornecedor 1 aparece no Mês 2 com os mesmos valores!
+6. Repita para o Mês 3 se necessário
 
 ### Passo 3: Calcular o PMPV Trimestral
 
@@ -96,7 +117,7 @@ python main.py
 
 ```
 Conta-Grafica-Automacao/
-├── main.py                  # Aplicação principal (223 linhas)
+├── main.py                  # Aplicação principal (~360 linhas)
 ├── README.md                # Este arquivo
 ├── requirements.txt         # Dependências
 └── TUTORIAL_FUNCOES.md      # Tutorial técnico (opcional)
@@ -153,6 +174,34 @@ PMPV Trimestral = (∑ Custos de todos os contratos nos 3 meses) / (∑ Volumes 
 
 ---
 
+## 🎯 Cenários de Uso do Botão 📋
+
+### **Cenário 1: Fornecedor mantém valores fixos nos 3 meses**
+
+1. Preencha **Fornecedor 1** no Mês 1
+2. Clique em **📋** → Selecione **Mês 2**
+3. Clique em **📋** novamente → Selecione **Mês 3**
+4. ✅ Pronto! Mesmos valores nos 3 meses
+
+### **Cenário 2: Valores mudam gradualmente**
+
+1. Preencha **Fornecedor 1** no Mês 1
+2. Copie para o Mês 2 (📋)
+3. Ajuste apenas o **volume** no Mês 2 (preços iguais)
+4. Copie a linha do Mês 2 para o Mês 3
+5. Ajuste o que mudou no Mês 3
+
+### **Cenário 3: Empresa já existe no destino**
+
+1. Você copiou **Fornecedor 1** para o Mês 2
+2. Depois percebeu que errou os valores
+3. Corrige no Mês 1
+4. Copia novamente (📋) → Mês 2
+5. Sistema pergunta: "Sobrescrever?"
+6. ✅ Clica "Sim" e atualiza
+
+---
+
 ## 🐛 Resolução de Problemas
 
 ### Problema: "Tkinter não encontrado"
@@ -181,11 +230,11 @@ sudo apt-get install python3-tk
 
 ### Entrada (Mês 1):
 
-| Fornecedor   | Molécula | Transporte | Logística | Preço Final | Volume  |
-|--------------|----------|------------|-----------|-------------|---------|
-| Fornecedor 1 | 10.50    | 0.50       | 0.30      | 11.30       | 100.000 |
-| Fornecedor 2 | 11.20    | 0.45       | 0.25      | 11.90       | 80.000  |
-| Fornecedor 3 | 9.80     | 0.00       | 1.65      | 11.45       | 50.000  |
+| Fornecedor   | Molécula | Transporte | Logística | Preço Final | Volume  | Ações    |
+|--------------|----------|------------|-----------|-------------|---------|----------|
+| Fornecedor 1 | 10.50    | 0.50       | 0.30      | 11.30       | 100.000 | 📋 🗑️  |
+| Fornecedor 2 | 11.20    | 0.45       | 0.25      | 11.90       | 80.000  | 📋 🗑️  |
+| Fornecedor 3 | 9.80     | 0.00       | 1.65      | 11.45       | 50.000  | 📋 🗑️  |
 
 ### Saída (Trimestre):
 
@@ -204,6 +253,9 @@ sudo apt-get install python3-tk
 - **Deixe campos vazios:** Se um fornecedor não opera em determinado mês, simplesmente não preencha o volume
 - **Nomes descritivos:** Use nomes como "Fornecedor A - Contrato 123" para facilitar identificação
 - **Conferência visual:** O Preço Final em azul ajuda a conferir se os valores estão corretos
+- **⚡ Economize tempo:** Use o botão **📋 Copiar** (roxo) para replicar uma linha entre meses
+- **Edite após copiar:** Após copiar, você pode ajustar apenas os valores que mudaram (ex: volume diferente)
+- **Cópia inteligente:** O sistema detecta se a empresa já existe no destino e pergunta se quer sobrescrever
 
 ---
 

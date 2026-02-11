@@ -34,7 +34,7 @@ class CalculadoraTrimestralPMPV:
             nome_mes = f"Mês {i}"
             aba = tk.Frame(self.notebook, bg="#fafafa")
             self.notebook.add(aba, text=f"  {nome_mes}  ")
-            self.dados_por_mes[nome_mes] = self._criar_area_mes(aba)
+            self.dados_por_mes[nome_mes] = self._criar_area_mes(aba, nome_mes)
 
         # --- Rodapé de Resultados Fixos ---
         self.frame_footer = tk.Frame(self.root, bg="#34495e", pady=25)
@@ -51,14 +51,14 @@ class CalculadoraTrimestralPMPV:
                                        relief="flat", cursor="hand2", activebackground="#229954")
         btn_calc_trimestre.pack()
 
-    def _criar_area_mes(self, parent):
+    def _criar_area_mes(self, parent, nome_mes_atual):
         # Cabeçalho interno da aba
         header_bg = "#34495e"
         h_frame = tk.Frame(parent, bg=header_bg, padx=15, pady=12)
         h_frame.pack(fill="x")
 
         titles = [("Empresa / Contrato", 27), ("Molécula", 13), ("Transporte", 13), 
-                  ("Logística", 13), ("Preço Final", 16), ("Volume (m³/dia)", 17), ("Ações", 8)]
+                  ("Logística", 13), ("Preço Final", 16), ("Volume (m³/dia)", 17), ("Ações", 10)]
         
         for txt, w in titles:
             tk.Label(h_frame, text=txt, width=w, font=("Segoe UI", 9, "bold"), 
@@ -127,15 +127,23 @@ class CalculadoraTrimestralPMPV:
                         bg="#fff9c4", relief="solid", bd=1, highlightthickness=0, fg="#f57c00")
         e_vol.pack(side="left", padx=3, ipady=4)
 
+        # Botão de Copiar (Roxo)
+        btn_copiar = tk.Button(row, text="📋", 
+                               command=lambda: self._copiar_linha_para_outro_mes(dados),
+                               bg="#9b59b6", fg="white", font=("Segoe UI", 10, "bold"),
+                               width=3, relief="flat", cursor="hand2")
+        btn_copiar.pack(side="left", padx=2, ipady=2)
+
         # Botão de Remover
         btn_remove = tk.Button(row, text="🗑️", 
                                command=lambda: self._remover_linha(row, dados, lista_referencia),
                                bg="#e74c3c", fg="white", font=("Segoe UI", 10, "bold"),
-                               width=5, relief="flat", cursor="hand2")
-        btn_remove.pack(side="left", padx=3, ipady=2)
+                               width=3, relief="flat", cursor="hand2")
+        btn_remove.pack(side="left", padx=2, ipady=2)
 
         dados = {'nome': e_nome, 'mol': e_mol, 'trans': e_trans, 'log': e_log, 
-                 'lbl_soma': lbl_soma, 'vol': e_vol, 'row': row, 'btn_remove': btn_remove}
+                 'lbl_soma': lbl_soma, 'vol': e_vol, 'row': row, 
+                 'btn_copiar': btn_copiar, 'btn_remove': btn_remove}
         
         # Bind para cálculo automático do preço final na linha
         for e in [e_mol, e_trans, e_log]:
@@ -172,6 +180,120 @@ class CalculadoraTrimestralPMPV:
             row_frame.destroy()
             if dados in lista_referencia:
                 lista_referencia.remove(dados)
+    
+    def _copiar_linha_para_outro_mes(self, dados_origem):
+        """Copia uma linha específica para outro mês"""
+        # Descobrir em qual mês estamos
+        mes_atual = None
+        for nome_mes, linhas in self.dados_por_mes.items():
+            if dados_origem in linhas:
+                mes_atual = nome_mes
+                break
+        
+        if not mes_atual:
+            messagebox.showerror("Erro", "Não foi possível identificar o mês atual.")
+            return
+        
+        # Criar janela de seleção
+        janela = tk.Toplevel(self.root)
+        janela.title("Copiar Linha")
+        janela.geometry("350x250")
+        janela.configure(bg="#f0f0f0")
+        janela.resizable(False, False)
+        
+        # Tornar modal
+        janela.transient(self.root)
+        janela.grab_set()
+        
+        empresa = dados_origem['nome'].get()
+        
+        tk.Label(janela, text="📋 Copiar Linha", font=("Segoe UI", 14, "bold"), 
+                bg="#f0f0f0", fg="#9b59b6").pack(pady=15)
+        
+        tk.Label(janela, text=f"Empresa: {empresa}", font=("Segoe UI", 10), 
+                bg="#f0f0f0").pack(pady=5)
+        
+        tk.Label(janela, text="Copiar para qual mês?", font=("Segoe UI", 10, "bold"), 
+                bg="#f0f0f0").pack(pady=10)
+        
+        # Botões para cada mês (exceto o atual)
+        for nome_mes in ["Mês 1", "Mês 2", "Mês 3"]:
+            if nome_mes != mes_atual:
+                btn = tk.Button(janela, text=f"➡️ {nome_mes}", 
+                               command=lambda m=nome_mes: self._executar_copia_linha(dados_origem, m, janela),
+                               bg="#9b59b6", fg="white", font=("Segoe UI", 11, "bold"),
+                               padx=20, pady=10, relief="flat", cursor="hand2", width=15)
+                btn.pack(pady=5)
+        
+        tk.Button(janela, text="Cancelar", command=janela.destroy,
+                 bg="#95a5a6", fg="white", font=("Segoe UI", 9),
+                 padx=15, pady=5, relief="flat", cursor="hand2").pack(pady=10)
+    
+    def _executar_copia_linha(self, dados_origem, mes_destino, janela_selecao):
+        """Executa a cópia da linha para o mês selecionado"""
+        empresa = dados_origem['nome'].get()
+        
+        # Fechar janela de seleção
+        janela_selecao.destroy()
+        
+        dados_destino = self.dados_por_mes[mes_destino]
+        
+        # Procurar se já existe uma linha com o mesmo nome
+        linha_existente = None
+        for d in dados_destino:
+            if d['nome'].get() == empresa:
+                linha_existente = d
+                break
+        
+        # Se encontrou, perguntar se quer sobrescrever
+        if linha_existente:
+            confirmacao = messagebox.askyesno(
+                "Empresa já existe",
+                f"A empresa '{empresa}' já existe no {mes_destino}.\n\n"
+                f"Deseja SOBRESCREVER os dados existentes?"
+            )
+            if not confirmacao:
+                return
+            destino = linha_existente
+        else:
+            # Procurar primeira linha vazia
+            destino = None
+            for d in dados_destino:
+                if not d['nome'].get() or d['nome'].get().startswith("Fornecedor") or d['nome'].get() == "Nova Empresa":
+                    destino = d
+                    break
+            
+            if not destino:
+                messagebox.showwarning(
+                    "Sem Espaço",
+                    f"Não há linhas vazias no {mes_destino}.\n\n"
+                    f"Use o botão ➕ para adicionar uma nova linha primeiro."
+                )
+                return
+        
+        # Copiar os dados
+        destino['nome'].delete(0, tk.END)
+        destino['nome'].insert(0, dados_origem['nome'].get())
+        
+        destino['mol'].delete(0, tk.END)
+        destino['mol'].insert(0, dados_origem['mol'].get())
+        
+        destino['trans'].delete(0, tk.END)
+        destino['trans'].insert(0, dados_origem['trans'].get())
+        
+        destino['log'].delete(0, tk.END)
+        destino['log'].insert(0, dados_origem['log'].get())
+        
+        destino['vol'].delete(0, tk.END)
+        destino['vol'].insert(0, dados_origem['vol'].get())
+        
+        # Atualizar a soma
+        self._update_row_total(destino)
+        
+        messagebox.showinfo(
+            "✓ Linha Copiada",
+            f"Empresa '{empresa}' copiada para {mes_destino} com sucesso!"
+        )
     _adicionar_nova_linha
 
     def calcular_trimestre(self):
