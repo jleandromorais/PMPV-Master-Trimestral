@@ -1,4 +1,15 @@
-# Projeto simples de console, sem dependências externas.
-# Você pode rodar com:
+# Dependências do Projeto PMPV
+
+# Interface Gráfica (Tkinter já vem com Python)
+
+# Banco de Dados SQLite (já vem com Python)
+
+# Excel
+openpyxl>=3.1.0
+
+# Como instalar:
+#   pip install -r requirements.txt
+#
+# Como rodar:
 #   python main.py
 
